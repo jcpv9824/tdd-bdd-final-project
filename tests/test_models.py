@@ -278,7 +278,7 @@ class TestProductModel(unittest.TestCase):
         price = 200
         price_str = "200 "
         for i in range(number_of_products):
-            product = ProductFactory(price = price)
+            product = ProductFactory(price=price)
             product.create()
 
         #Se cuentan cuantos productos cuestan 200
