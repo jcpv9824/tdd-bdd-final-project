@@ -23,6 +23,7 @@ While debugging just these tests it's convenient to use this:
     nosetests --stop tests/test_models.py:TestProductModel
 
 """
+import random
 import os
 import logging
 import unittest
@@ -30,7 +31,6 @@ from decimal import Decimal
 from service.models import Product, Category, db, DataValidationError
 from service import app
 from tests.factories import ProductFactory
-import random 
 
 
 DATABASE_URI = os.getenv(
@@ -115,17 +115,15 @@ class TestProductModel(unittest.TestCase):
         self.assertEqual(found_product.name, product.name)
         self.assertEqual(found_product.description, product.description)
         self.assertEqual(found_product.price, product.price)
-    
+
     def test_update_a_product_without_id(self):
         """Updating a product without id"""
-
-        #Crear un producto en base de datos
+        # Crear un producto en base de datos
         product = ProductFactory()
         product.create()
         product_db = Product.find(product.id)
         self.assertEqual(product.name, product_db.name)
-
-        #Actualizar nombre del producto sin id
+        # Actualizar nombre del producto sin id
         product.name = "Pooh"
         product.id = None
         self.assertRaises(DataValidationError, product.update)
@@ -133,13 +131,13 @@ class TestProductModel(unittest.TestCase):
     def test_update_a_product(self):
         """Updating a product"""
 
-        #Crear un producto en base de datos
+        # Crear un producto en base de datos
         product = ProductFactory()
         product.create()
         product_db = Product.find(product.id)
         self.assertEqual(product.name, product_db.name)
 
-        #Actualizar nombre del producto
+        # Actualizar nombre del producto
         product.name = "Pooh"
         product.update()
         product_db_updated = Product.find(product.id)
@@ -148,12 +146,12 @@ class TestProductModel(unittest.TestCase):
     def test_delete_a_product(self):
         """Deleting a product"""
 
-         #Crear un producto en base de datos
+        # Crear un producto en base de datos
         product = ProductFactory()
         product.create()
         self.assertEqual(len(Product.all()), 1)
 
-        #Eliminar producto de la base de datos
+        # Eliminar producto de la base de datos
         product.delete()
         self.assertEqual(len(Product.all()), 0)
 
@@ -170,29 +168,29 @@ class TestProductModel(unittest.TestCase):
 
     def test_list_all_products(self):
         """Listing all products"""
-        #Crear productos en base de datos
-        number_of_products = random.randint(2,15)
-        for i in range(number_of_products):
+        # Crear productos en base de datos
+        number_of_products = random.randint(2, 15)
+        for product in range(number_of_products):
             product = ProductFactory()
             product.create()
-        #Obtener todos los productos
-        self.assertEqual(len(Product.all()),number_of_products)
+        # Obtener todos los productos
+        self.assertEqual(len(Product.all()), number_of_products)
 
     def test_search_by_name(self):
         """Searching a product by name"""
-        #Crear productos en base de datos
-        number_of_products = random.randint(2,15)
+        # Crear productos en base de datos
+        number_of_products = random.randint(2, 15)
         for i in range(number_of_products):
             product = ProductFactory()
             product.create()
         name = Product.all()[0].name
 
-        #Se cuentan cuantos nombres productos con nombre iguales se generaron
+        # Se cuentan cuantos nombres productos con nombre iguales se generaron
         count = 0
         for i in Product.all():
             if i.name == name:
                 count += 1
-        #Se buscan los productos que tienen el mismo nombre y se cuentan
+        # Se buscan los productos que tienen el mismo nombre y se cuentan
         found = Product.find_by_name(name)
         self.assertEqual(count, found.count())
 
@@ -201,7 +199,7 @@ class TestProductModel(unittest.TestCase):
         # Crear productos en base de datos
         number_of_products = random.randint(2, 15)
         selected_category = Category.CLOTHS  # O cualquier otra categoría de tu elección
-        for i in range(number_of_products):
+        for product in range(number_of_products):
             product = ProductFactory(category=selected_category)
             product.create()
 
@@ -214,30 +212,30 @@ class TestProductModel(unittest.TestCase):
         # Se buscan los productos de esa categoría y se cuentan
         found_products = Product.find_by_category(selected_category)
         self.assertEqual(count, found_products.count())
-        
+
     def test_search_by_availability(self):
         """Searching a product by availability"""
-        #Crear productos en base de datos
-        number_of_products = random.randint(2,15)
+        # Crear productos en base de datos
+        number_of_products = random.randint(2, 15)
         for i in range(number_of_products):
             product = ProductFactory()
             product.create()
         availability = Product.all()[0].available
 
-        #Se cuentan cuantos productos se generaron de disponibilidad aleatorea
+        # Se cuentan cuantos productos se generaron de disponibilidad aleatorea
         count = 0
         for i in Product.all():
             if i.available == availability:
                 count += 1
 
-        #Se buscan los productos que tienen la misma disponibilidad y se cuentan
+        # Se buscan los productos que tienen la misma disponibilidad y se cuentan
         found = Product.find_by_availability(availability)
         self.assertEqual(count, found.count())
 
     def test_deserialize_product(self):
         """Deseliziling a product"""
 
-        #A product is selialized
+        # A product is selialized
         product = ProductFactory()
         product_dic = product.serialize()
         self.assertEqual(product.name, product_dic["name"])
@@ -246,14 +244,14 @@ class TestProductModel(unittest.TestCase):
         self.assertEqual(float(product.price), float(product_dic["price"]))
         self.assertEqual(product.available, product_dic["available"])
 
-        #The product is deserialized
+        # The product is deserialized
         result = Product()
         result.deserialize(product_dic)
         self.assertEqual(result.name, product_dic["name"])
         self.assertEqual(result.description, product_dic["description"])
         self.assertEqual(float(result.price), float(product_dic["price"]))
         self.assertEqual(result.available, product_dic["available"])
-    
+
     def test_deserialize_without_boolean(self):
         """Deserializing a product without a boolean"""
 
@@ -268,29 +266,29 @@ class TestProductModel(unittest.TestCase):
         # El producto es deserializado con un valor no booleano en 'available'
         product_dict["available"] = "No boolean value"
         result = Product()
-        with self.assertRaises(DataValidationError): 
+        with self.assertRaises(DataValidationError):
             result.deserialize(product_dict)
 
     def test_find_by_price(self):
         """finding products by price"""
-        #Crear productos en base de datos
-        number_of_products = random.randint(2,15)
+        # Crear productos en base de datos
+        number_of_products = random.randint(2, 15)
         price = 200
         price_str = "200 "
-        for i in range(number_of_products):
+        for product in range(number_of_products):
             product = ProductFactory(price=price)
             product.create()
 
-        #Se cuentan cuantos productos cuestan 200
+        # Se cuentan cuantos productos cuestan 200
         count = 0
         for product in Product.all():
             if product.price == price:
                 count += 1
 
-        #Se buscan los productos que tienen el mismo precio y se cuentan
+        # Se buscan los productos que tienen el mismo precio y se cuentan
         found = Product.find_by_price(price_str)
         self.assertEqual(count, found.count())
-    
+
     def test_deserialize_missing_attribute(self):
         """Deserializing a product with missing attribute"""
         product_dict = ProductFactory().serialize()
@@ -314,5 +312,6 @@ class TestProductModel(unittest.TestCase):
         new_product = Product()
         with self.assertRaises(DataValidationError):
             new_product.deserialize(product_dict)
+
 
 
