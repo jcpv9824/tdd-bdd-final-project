@@ -20,9 +20,10 @@ Product Store Service with UI
 """
 from flask import jsonify, request, abort
 from flask import url_for  # noqa: F401 pylint: disable=unused-import
-from service.models import Product
+from service.models import Product, Category
 from service.common import status  # HTTP Status Codes
 from . import app
+from urllib.parse import quote_plus
 
 
 ######################################################################
@@ -102,7 +103,20 @@ def list_products():
     """Returns a list of Products"""
     app.logger.info("Request to list Products...")
 
-    products = Product.all()
+    products = []
+    name = request.args.get("name")
+    category = request.args.get("category")
+    availability = request.args.get("availability")
+    
+    if name:
+        products = Product.find_by_name(name)
+    elif category:  # Si 'category' está presente
+        category = Category[category.upper()]  # Convierte el nombre de categoría a enum
+        products = Product.find_by_category(category)
+    elif availability:
+        products = Product.find_by_availability(availability)
+    else:
+        products = Product.all()
 
     results = [product.serialize() for product in products]
     app.logger.info("[%s] Products returned", len(results))
@@ -166,5 +180,6 @@ def delete_products(product_id):
         product.delete()
 
     return "", status.HTTP_204_NO_CONTENT
+
 
 
