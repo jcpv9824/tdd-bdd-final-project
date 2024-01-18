@@ -25,13 +25,15 @@ Test cases can be run with the following:
     nosetests --stop tests/test_service.py:TestProductService
 """
 import os
+import random
 import logging
 from decimal import Decimal
 from unittest import TestCase
 from service import app
 from service.common import status
-from service.models import db, init_db, Product
+from service.models import db, init_db, Product, Category
 from tests.factories import ProductFactory
+from urllib.parse import quote_plus
 
 # Disable all but critical errors during normal test run
 # uncomment for debugging failing tests
@@ -215,6 +217,80 @@ class TestProductRoutes(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = response.get_json()
         self.assertEqual(len(data), 5)
+
+    def test_list_by_name(self):
+        """ It should list all products by name"""
+        # Creating products
+        number_of_products = random.randint(2, 100)
+        products = self._create_products(number_of_products)
+
+        # Assigning equal name to all products
+        for product in products:
+            product.name = "unknown"
+            response = self.client.put(f"{BASE_URL}/{product.id}", json=product.serialize())
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            updated_product = response.get_json()
+            self.assertEqual(updated_product["name"], "unknown")
+
+        # Test listing by name
+        response = self.client.get(
+            BASE_URL, query_string=f"name={quote_plus('unknown')}"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(len(data), number_of_products)
+        for product in data:
+            self.assertEqual(product["name"], "unknown")
+
+    def test_list_by_availability(self):
+        """ It should list all products by availability"""
+        # Creating products
+        number_of_products = random.randint(2, 100)
+        products = self._create_products(number_of_products)
+
+        # Assigning equal availability to all products
+        product_availability = products[0].available
+        for product in products:
+            product.available = product_availability
+            response = self.client.put(f"{BASE_URL}/{product.id}", json=product.serialize())
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            updated_product = response.get_json()
+            self.assertEqual(updated_product["available"], product_availability)
+
+        # Test listing by availability
+        response = self.client.get(
+            BASE_URL, query_string=f"availability={quote_plus(str(product_availability))}"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(len(data), number_of_products)
+        for product in data:
+            self.assertEqual(product["available"], product_availability)
+        
+    def test_list_by_category(self):
+        """ It should list all products by category"""
+        # Creating products
+        number_of_products = random.randint(2, 100)
+        products = self._create_products(number_of_products)
+
+        # Assigning equal category to all products
+        product_category = products[0].category
+        for product in products:
+            product.category = product_category
+            response = self.client.put(f"{BASE_URL}/{product.id}", json=product.serialize())
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            updated_product = response.get_json()
+            self.assertEqual(updated_product["category"], product_category.name)  # Corregido aquí
+
+        # Test listing by category
+        response = self.client.get(BASE_URL, query_string=f"category={product_category.name}")  # Corregido aquí
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(len(data), number_of_products)
+        for product in data:
+            self.assertEqual(product["category"], product_category.name)  # Corregido aquí
+
+
 
     ######################################################################
     # Utility functions
