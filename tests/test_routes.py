@@ -31,7 +31,7 @@ from decimal import Decimal
 from unittest import TestCase
 from service import app
 from service.common import status
-from service.models import db, init_db, Product, Category
+from service.models import db, init_db, Product
 from tests.factories import ProductFactory
 from urllib.parse import quote_plus
 
@@ -195,7 +195,7 @@ class TestProductRoutes(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         updated_product = response.get_json()
         self.assertEqual(updated_product["description"], "unknown")
-    
+
     def test_delete_product(self):
         """It should Delete a Product"""
         products = self._create_products(5)
@@ -266,7 +266,7 @@ class TestProductRoutes(TestCase):
         self.assertEqual(len(data), number_of_products)
         for product in data:
             self.assertEqual(product["available"], product_availability)
-        
+
     def test_list_by_category(self):
         """ It should list all products by category"""
         # Creating products
@@ -290,11 +290,9 @@ class TestProductRoutes(TestCase):
         for product in data:
             self.assertEqual(product["category"], product_category.name)  # Corregido aquí
 
-
-
-    ######################################################################
-    # Utility functions
-    ######################################################################
+######################################################################
+# Utility functions
+######################################################################
 
     def get_product_count(self):
         """save the current number of products"""
