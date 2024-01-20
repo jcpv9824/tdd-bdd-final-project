@@ -23,7 +23,6 @@ from flask import url_for  # noqa: F401 pylint: disable=unused-import
 from service.models import Product, Category
 from service.common import status  # HTTP Status Codes
 from . import app
-from urllib.parse import quote_plus
 
 
 ######################################################################
@@ -129,6 +128,8 @@ def list_products():
 ######################################################################
 # READ A PRODUCT
 ######################################################################
+
+
 @app.route("/products/<int:product_id>", methods=["GET"])
 def get_products(product_id):
     """
@@ -148,6 +149,8 @@ def get_products(product_id):
 ######################################################################
 # UPDATE AN EXISTING PRODUCT
 ######################################################################
+
+
 @app.route("/products/<int:product_id>", methods=["PUT"])
 def update_products(product_id):
     """
@@ -170,6 +173,8 @@ def update_products(product_id):
 ######################################################################
 # DELETE A PRODUCT
 ######################################################################
+
+
 @app.route("/products/<int:product_id>", methods=["DELETE"])
 def delete_products(product_id):
     """
