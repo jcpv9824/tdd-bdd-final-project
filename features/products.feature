@@ -55,13 +55,13 @@ Scenario: Read a Product
     And I should see "Cloths" in the "Category" dropdown
     And I should see "59.95" in the "Price" field
 
-Scenario: Updating a product
+Scenario: Update a Product
     When I visit the "Home Page"
     And I set the "Name" to "Hat"
     And I press the "Search" button
     Then I should see the message "Success"
     And I should see "A red fedora" in the "Description" field
-    When I change "Name" to "fedora
+    When I change "Name" to "Fedora"
     And I press the "Update" button
     Then I should see the message "Success"
     When I copy the "Id" field
@@ -76,7 +76,7 @@ Scenario: Updating a product
     And I should see "Fedora" in the results
     And I should not see "Hat" in the results
 
-Scenario: Deleting a product
+Scenario: Delete a Product
     When I visit the "Home Page"
     And I set the "Name" to "Hat"
     And I press the "Search" button
@@ -86,14 +86,13 @@ Scenario: Deleting a product
     And I press the "Clear" button
     And I paste the "Id" field
     And I press the "Delete" button
-    Then I should see the message "Success"
-    And I should see the message "Product has been Deleted!"
+    Then I should see the message "Product has been Deleted!"
     When I press the "Clear" button
     And I press the "Search" button
     Then I should see the message "Success"
     And I should not see "Hat" in the results
 
-Scenario: Listing all products
+Scenario: List all products
     When I visit the "Home Page"
     And I press the "Clear" button
     And I press the "Search" button
@@ -103,41 +102,32 @@ Scenario: Listing all products
     And I should see "Big Mac" in the results
     And I should see "Sheets" in the results
 
-Scenario: Searching a Product based on Category
+Scenario: Search by category
     When I visit the "Home Page"
     And I press the "Clear" button
-    And I select "cloths" in the "Category" dropdown
+    And I select "Food" in the "Category" dropdown
     And I press the "Search" button
     Then I should see the message "Success"
-    And I should see "Hat" in the results
-    And I should see "Shoes" in the results
-    And I should not see "Big Mac" in the results
+    And I should see "Big Mac" in the results
+    And I should not see "Hat" in the results
+    And I should not see "Shoes" in the results
     And I should not see "Sheets" in the results
 
-Scenario: Searching a Product based on Availability
+Scenario: Search by available
     When I visit the "Home Page"
     And I press the "Clear" button
     And I select "True" in the "Available" dropdown
     And I press the "Search" button
     Then I should see the message "Success"
     And I should see "Hat" in the results
-    And I should not see "Shoes" in the results
     And I should see "Big Mac" in the results
     And I should see "Sheets" in the results
+    And I should not see "Shoes" in the results
 
-Scenario: Searching a Product based on Name
+Scenario: Search by name
     When I visit the "Home Page"
     And I set the "Name" to "Hat"
     And I press the "Search" button
     Then I should see the message "Success"
     And I should see "Hat" in the "Name" field
     And I should see "A red fedora" in the "Description" field
-
-
-
-
-
-
-
-
-
