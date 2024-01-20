@@ -312,6 +312,3 @@ class TestProductModel(unittest.TestCase):
         new_product = Product()
         with self.assertRaises(DataValidationError):
             new_product.deserialize(product_dict)
-
-
-
