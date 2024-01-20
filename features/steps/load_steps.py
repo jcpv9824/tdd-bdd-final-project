@@ -24,6 +24,7 @@ For information on Waiting until elements are present in the HTML see:
 """
 import requests
 from behave import given
+from service.common import status
 
 # HTTP Return Codes
 HTTP_200_OK = 200
@@ -43,10 +44,45 @@ def step_impl(context):
         context.resp = requests.delete(f"{rest_endpoint}/{product['id']}")
         assert(context.resp.status_code == HTTP_204_NO_CONTENT)
 
-    #
     # load the database with new products
     #
     for row in context.table:
-        #
-        # ADD YOUR CODE HERE TO CREATE PRODUCTS VIA THE REST API
-        #
+        payload = {
+             "name" : row['name'], 
+             "description" : row["description"],
+             "price" : row["price"],
+             "available": row["available"] in ["True", "true", "1"],
+             "category" : row["category"]
+        }
+        context.resp = requests.post(
+            f"{context.base_url}/products",
+            json=payload
+        )
+        assert context.resp.status_code is HTTP_201_CREATED
+
+    @when(u'I press the "Create" button')
+    def step_impl(context):
+    raise NotImplementedError(u'STEP: When I press the "Create" button')
+
+
+    @then(u'I should see the message "Success"')
+    def step_impl(context):
+    raise NotImplementedError(u'STEP: Then I should see the message "Success"')
+
+
+    @when(u'I press the "Clear" button')
+    def step_impl(context):
+    raise NotImplementedError(u'STEP: When I press the "Clear" button')
+
+
+    @when(u'I press the "Retrieve" button')
+    def step_impl(context):
+    raise NotImplementedError(u'STEP: When I press the "Retrieve" button')
+
+
+    @when(u'I press the "Search" button')
+    def step_impl(context):
+    raise NotImplementedError(u'STEP: When I press the "Search" button')
+
+
+
